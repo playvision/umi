@@ -383,7 +383,8 @@ namespace UMI {
 #endif
             data["id"] = id;
             var json = data.ToJsonString();
-#if UNITY_ANDROID
+#if UNITY_EDITOR
+#elif UNITY_ANDROID
             using (var plugin = new AndroidJavaClass(PLUGIN_PACKAGE)) {
                 plugin.CallStatic("execute", id, json);
             }
@@ -421,8 +422,9 @@ namespace UMI {
             data["debug"] = false;
 #if UMI_DEBUG
             data["debug"] = true;
-#endif            
-#if UNITY_ANDROID
+#endif     
+#if UNITY_EDITOR       
+#elif UNITY_ANDROID
             using (var plugin = new AndroidJavaClass(PLUGIN_PACKAGE)) {
                 plugin.CallStatic("init", data.ToJsonString());
             }
@@ -438,7 +440,8 @@ namespace UMI {
 #if UMI_DEBUG
             Debug.Log($"[UMI] destroy");
 #endif
-#if UNITY_ANDROID
+#if UNITY_EDITOR
+#elif UNITY_ANDROID
             using (var plugin = new AndroidJavaClass(PLUGIN_PACKAGE)) {
                 plugin.CallStatic("destroy");
             }
@@ -481,7 +484,14 @@ namespace UMI {
 #endif
             var folder = Application.dataPath;
             var filepath = $"{Application.persistentDataPath}/{fileName}";
-#if UNITY_ANDROID
+
+#if UNITY_EDITOR
+            var data = $"{Application.streamingAssetsPath}/{fileName}";
+            if (File.Exists(filepath)) {
+                File.Delete(filepath);
+            }
+            File.Copy(data, filepath);
+#elif UNITY_ANDROID
             using (var www = UnityWebRequest.Get($"jar:file://{folder}!/assets/{fileName}")) {
                 www.SendWebRequest();
                 while (!www.isDone) { }
