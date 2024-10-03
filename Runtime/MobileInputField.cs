@@ -353,7 +353,7 @@ namespace UMI {
         /// </summary>
         public string Text {
             get {
-                return (_inputObject == null) ? string.Empty : _inputObject.text;
+                return (_inputObject == null) ? _textOnCreate : _inputObject.text;
             }
             set {
                 if (!_isMobileInputCreated) {
@@ -611,6 +611,7 @@ namespace UMI {
             _isMobileInputCreated = true;
             if (!string.IsNullOrEmpty(_textOnCreate)) {
                 Text = _textOnCreate;
+                _textOnCreate = string.Empty;
             }
             if (!_isVisibleOnCreate) {
                 SetVisible(false);
