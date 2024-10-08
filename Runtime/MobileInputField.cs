@@ -89,6 +89,11 @@ namespace UMI {
         const string SET_TEXT = "SET_TEXT";
 
         /// <summary>
+        /// Set text to InputField
+        /// </summary>
+        const string SET_CARET_POSITION = "SET_CARET_POSITION";
+
+        /// <summary>
         /// Set input content type
         /// </summary>
         const string SET_CONTENT_TYPE = "SET_CONTENT_TYPE";
@@ -261,6 +266,11 @@ namespace UMI {
         string _textOnCreate = null;
 
         /// <summary>
+        /// Cache for caret position before create
+        /// </summary>
+        int _caretPositionOnCreate = 0;
+        
+		/// <summary>
         /// Change , to . for float
         /// </summary>
         CultureInfo _cultureInfo = CultureInfo.InvariantCulture;
@@ -372,6 +382,23 @@ namespace UMI {
                 }
                 _inputObject.text = value;
                 SetTextNative(value);
+            }
+        }
+
+        /// <summary>
+        /// MobileInput caret position
+        /// </summary>
+        public int CaretPosition {
+            get {
+                return (_inputObject == null) ? _caretPositionOnCreate : _inputObject.caretPosition;
+            }
+            set {
+                if (!_isMobileInputCreated) {
+                    _caretPositionOnCreate = value;
+                    return;
+                }
+                _inputObject.caretPosition = value;
+                SetCaretPositionNative(value);
             }
         }
 
@@ -622,7 +649,9 @@ namespace UMI {
             _isMobileInputCreated = true;
             if (!string.IsNullOrEmpty(_textOnCreate)) {
                 Text = _textOnCreate;
+				CaretPosition = _caretPositionOnCreate;
                 _textOnCreate = string.Empty;
+				_caretPositionOnCreate = 0;
             }
             if (!_isVisibleOnCreate) {
                 SetVisible(false);
@@ -713,6 +742,19 @@ namespace UMI {
             data["msg"] = SET_TEXT;
             data["text"] = text;
             Execute(data);
+        }
+        
+		/// <summary>
+        /// Set caret position of field
+        /// </summary>
+        /// <param name="position">New caret position</param>
+        void SetCaretPositionNative(int position) {
+#if UNITY_ANDROID
+            var data = new JsonObject();
+            data["msg"] = SET_CARET_POSITION;
+            data["position"] = position;
+            Execute(data);
+#endif
         }
 
         /// <summary>
