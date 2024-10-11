@@ -42,6 +42,7 @@ public class MobileInput {
     private static final String CREATE = "CREATE_EDIT";
     private static final String REMOVE = "REMOVE_EDIT";
     private static final String SET_TEXT = "SET_TEXT";
+    private static final String SET_CARET_POSITION = "SET_CARET_POSITION";
     private static final String SET_CONTENT_TYPE = "SET_CONTENT_TYPE";
     private static final String SET_TEXT_COLOR = "SET_TEXT_COLOR";
     private static final String SET_PTEXT_COLOR = "SET_PTEXT_COLOR";
@@ -173,6 +174,10 @@ public class MobileInput {
                 case SET_TEXT:
                     String text = data.getString("text");
                     this.SetText(text);
+                    break;
+                case SET_CARET_POSITION:
+                    int position = data.getInt("position");
+                    this.SetCaretPosition(position);
                     break;
                 case SET_TEXT_COLOR:
                     edit.setTextColor(this.getColor(data));
@@ -658,6 +663,17 @@ public class MobileInput {
     private void SetText(String newText) {
         if (edit != null) {
             edit.setText(newText);
+        }
+    }
+    
+    /**
+     * Set caret position
+     *
+     * @param position New caret position
+     */
+    private void SetCaretPosition(int position) {
+        if (edit != null) {
+            edit.setSelection(position);
         }
     }
 
